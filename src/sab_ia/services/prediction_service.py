@@ -1,3 +1,5 @@
+import tempfile
+from pathlib import Path
 from typing import Dict, Any
 
 from fastapi import UploadFile
@@ -27,4 +29,16 @@ async def process_audio_file(
     finally:
         remove_temp_file(temp_path)
 
+
+async def create_temp_file(audio_file: UploadFile) -> Path:
+
+    temp_path = Path(tempfile.mktemp(suffix=".wav"))
+    content = await audio_file.read()
+    temp_path.write_bytes(content)
+    return temp_path
+
+
+def remove_temp_file(temp_path: Path) -> None:
+    if temp_path.exists():
+        temp_path.unlink()
 
