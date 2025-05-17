@@ -11,4 +11,5 @@ async def predict_species(
     min_confidence: float = Query(
         0.1, ge=0.0, lt=1.0, description="Minimum confidence threshold for predictions"
     ),
-): return process_audio_file(audio_file, min_confidence)
+):
+    return process_audio_file(audio_file, min_confidence)

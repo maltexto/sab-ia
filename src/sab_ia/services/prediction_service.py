@@ -70,6 +70,7 @@ def run_birdnet_prediction(
     )
     return predictions
 
+
 def parse_species_name(species_name: str) -> Tuple[str, str]:
     """
     Parse a species name string into scientific and common names.
