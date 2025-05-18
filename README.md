@@ -14,8 +14,10 @@ An API that identifies bird species from audio recordings using the BirdNET mach
 │       │       └── predictions.py
 │       └── services/            # Business logic
 │           └── prediction_service.py
+├── tests/                       # Unit tests
+│   └──test_prediction_service.py
 ├── Dockerfile                   # Docker configuration
-└── pyproject.toml              # Project dependencies
+└── pyproject.toml               # Project dependencies
 ```
 
 ## 🚀 Running with Docker
@@ -29,8 +31,8 @@ An API that identifies bird species from audio recordings using the BirdNET mach
 1. **Clone the repository (if not already done)**
 
    ```bash
-   git clone <repository-url>
-   cd <repository-directory>
+   git clone `https://github.com/maltexto/sab-ia` sab_ia
+   cd sab_ia
    ```
 
 2. **Build the Docker image**
