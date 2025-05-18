@@ -1,4 +1,4 @@
-from fastapi import APIRouter, UploadFile, File, HTTPException, Query
+from fastapi import APIRouter, UploadFile, File, Query
 
 from sab_ia.services import process_audio_file
 
@@ -12,4 +12,5 @@ async def predict_species(
         0.1, ge=0.0, lt=1.0, description="Minimum confidence threshold for predictions"
     ),
 ):
-    return process_audio_file(audio_file, min_confidence)
+
+    return await process_audio_file(audio_file, min_confidence)

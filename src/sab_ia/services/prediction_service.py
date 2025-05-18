@@ -6,6 +6,7 @@ from typing import Dict, List, Any, Tuple
 
 from fastapi import UploadFile
 from birdnet import predict_species_within_audio_file, SpeciesPredictions
+from pydub import AudioSegment
 
 
 async def process_audio_file(
@@ -25,6 +26,7 @@ async def process_audio_file(
     temp_path = await create_temp_file(audio_file)
 
     try:
+        ensure_mono_audio(temp_path)
         predictions = run_birdnet_prediction(temp_path, min_confidence)
         species_data = aggregate_species_data(predictions)
         return format_result(species_data)
@@ -111,15 +113,17 @@ def aggregate_species_data(predictions: SpeciesPredictions) -> List[Dict[str, An
     for time_interval, species_predictions in predictions.items():
         for species_name, confidence in species_predictions.items():
 
+            confidence_value = float(confidence)
+
             scientific_name, common_name = parse_species_name(species_name)
 
             if (
                 scientific_name not in species_data
-                or confidence > species_data[scientific_name]["confidence"]
+                or confidence_value > species_data[scientific_name]["confidence"]
             ):
                 species_data[scientific_name]["scientific_name"] = scientific_name
                 species_data[scientific_name]["common_name"] = common_name
-                species_data[scientific_name]["confidence"] = confidence
+                species_data[scientific_name]["confidence"] = confidence_value  # Usar o valor convertido
 
             # Increment occurrence count
             species_data[scientific_name]["occurrences"] += 1
@@ -133,3 +137,20 @@ def aggregate_species_data(predictions: SpeciesPredictions) -> List[Dict[str, An
 
 def format_result(species_list: List[Dict[str, Any]]) -> Dict[str, Any]:
     return {"species_count": len(species_list), "species": species_list}
+
+
+def ensure_mono_audio(file_path: Path) -> None:
+
+    try:
+
+        audio = AudioSegment.from_file(file_path)
+
+        # verify if the audio is stereo
+        if audio.channels > 1:
+            # convert to mono
+            mono_audio = audio.set_channels(1)
+
+            # export the mono audio to the same file path
+            mono_audio.export(file_path, format="wav")
+    except Exception as exception:
+        raise ValueError(f"Falha ao processar arquivo de áudio: {str(exception)}")
